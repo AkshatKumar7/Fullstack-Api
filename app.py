@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS 
 from datetime import datetime
 import re
 import os
 
 app = Flask(__name__)
+CORS(app) 
 
 def is_number(s):
     try:
@@ -102,7 +104,7 @@ def home():
 
 @app.route('/favicon.ico')
 def favicon():
-    return '', 204  
+    return '', 204
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
