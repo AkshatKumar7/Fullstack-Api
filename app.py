@@ -1,5 +1,4 @@
-# app.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from datetime import datetime
 import re
 import os
@@ -7,7 +6,6 @@ import os
 app = Flask(__name__)
 
 def is_number(s):
-    """Check if a string can be converted to a number"""
     try:
         float(s)
         return True
@@ -15,15 +13,12 @@ def is_number(s):
         return False
 
 def is_alphabet(s):
-    """Check if a string contains only alphabets"""
     return bool(re.match('^[a-zA-Z]+$', s))
 
 def is_special_character(s):
-    """Check if a string is a special character (not alphanumeric)"""
     return not (is_number(s) or is_alphabet(s))
 
 def process_data(data):
-    """Process the input data according to the requirements"""
     odd_numbers = []
     even_numbers = []
     alphabets = []
@@ -103,10 +98,11 @@ def bfhl():
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify({
-        "message": "Welcome to the Full Stack API",
-        "endpoint": "POST /bfhl"
-    }), 200
+    return send_from_directory('.', 'index.html')
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204  
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
