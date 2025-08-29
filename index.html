@@ -3,101 +3,596 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Stack API Tester</title>
+    <title>API Tester with Dynamic URL Configuration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             padding: 20px;
-            background-color: #f5f5f5;
         }
+        
         .container {
+            max-width: 1000px;
+            margin: 0 auto;
             background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        h1 {
-            color: #333;
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #3a0ca3);
+            color: white;
+            padding: 25px;
             text-align: center;
         }
-        .input-group {
-            margin-bottom: 15px;
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
         }
+        
+        .description {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
         }
-        input[type="text"] {
+        
+        input[type="text"], input[type="url"], textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             font-size: 16px;
+            transition: border-color 0.2s;
         }
-        button {
-            background-color: #4CAF50;
+        
+        input[type="text"]:focus, input[type="url"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .example {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            background-color: var(--primary);
             color: white;
-            padding: 10px 15px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 6px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        button:hover {
-            background-color: #45a049;
+        
+        .btn:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
         }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-success:hover {
+            background-color: #3db5d8;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e4850f;
+        }
+        
         .response {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            border-left: 4px solid #4CAF50;
+            margin-top: 25px;
         }
-        .error {
-            border-left-color: #f44336;
-            background-color: #ffebee;
-        }
+        
         pre {
             white-space: pre-wrap;
             word-wrap: break-word;
-        }
-        .example {
-            margin-top: 10px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 14px;
-            color: #666;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            border-left-color: var(--danger);
+        }
+        
+        .success {
+            border-left-color: var(--success);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-title i {
+            margin-right: 8px;
+        }
+        
+        .result-content {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .result-array {
+            background-color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-family: monospace;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .url-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .url-container input {
+            flex: 1;
+        }
+        
+        .saved-urls {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .url-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .url-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .use-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .remove-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .current-url {
+            padding: 10px 15px;
+            background-color: #e8f4ff;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                border-radius: 0;
+            }
+            
+            .url-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Full Stack API Tester</h1>
+        <header>
+            <h1>API Tester with Dynamic URL Configuration</h1>
+            <p class="description">Test your backend API with your Render deployment URL</p>
+        </header>
         
-        <div class="input-group">
-            <label for="arrayInput">Enter Array Elements (comma separated):</label>
-            <input type="text" id="arrayInput" placeholder='e.g., a, 1, 334, 4, R, $'>
-            <div class="example">Example: a, 1, 334, 4, R, $</div>
+        <div class="content">
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-link"></i> API Endpoint Configuration</span>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label for="apiUrlInput">
+                            <i class="fas fa-server"></i> Your Render Deployment URL
+                        </label>
+                        <div class="url-container">
+                            <input type="url" id="apiUrlInput" placeholder="https://your-app-name.onrender.com">
+                            <button class="btn btn-success" onclick="saveUrl()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </div>
+                        <div class="example">Enter your Render deployment URL (e.g., https://my-api.onrender.com)</div>
+                    </div>
+                    
+                    <div class="current-url">
+                        <div>
+                            <strong>Current API URL:</strong>
+                            <span id="currentApiUrl">Not set</span>
+                        </div>
+                        <button class="btn btn-warning" onclick="changeUrl()">
+                            <i class="fas fa-edit"></i> Change
+                        </button>
+                    </div>
+                    
+                    <div class="saved-urls" id="savedUrlsContainer">
+                        <h3>Saved URLs</h3>
+                        <div id="savedUrlsList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fas fa-paper-plane"></i> API Request</span>
+                    <span>POST <span id="currentEndpoint">/bfhl</span></span>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label for="arrayInput">
+                            <i class="fas fa-list"></i> Array Elements (comma separated)
+                        </label>
+                        <input type="text" id="arrayInput" placeholder='e.g., a, 1, 334, 4, R, $'>
+                        <div class="example">Enter values separated by commas. The API will categorize them into numbers, alphabets, and special characters.</div>
+                    </div>
+                    
+                    <button id="testBtn" class="btn" onclick="testAPI()">
+                        <i class="fas fa-paper-plane"></i> Test API
+                    </button>
+                </div>
+            </div>
+            
+            <div class="response">
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fas fa-reply"></i> API Response</span>
+                        <span id="status">Status: Waiting for request</span>
+                    </div>
+                    <div class="card-body">
+                        <pre id="responseContent">No data received yet. Send a request to see the response.</pre>
+                        
+                        <div id="resultContainer" style="display: none;">
+                            <h3>Results Overview</h3>
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-hashtag"></i> Odd Numbers</div>
+                                    <div id="oddNumbers" class="result-array"></div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-hashtag"></i> Even Numbers</div>
+                                    <div id="evenNumbers" class="result-array"></div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-font"></i> Alphabets</div>
+                                    <div id="alphabets" class="result-array"></div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-star"></i> Special Characters</div>
+                                    <div id="specialChars" class="result-array"></div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-calculator"></i> Sum</div>
+                                    <div id="sum" class="result-content"></div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-title"><i class="fas fa-link"></i> Concatenated String</div>
+                                    <div id="concatString" class="result-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <button onclick="testAPI()">Test API</button>
-        
-        <div id="response" class="response" style="display: none;">
-            <h3>Response:</h3>
-            <pre id="responseContent"></pre>
+        <div class="footer">
+            <p>API Tester with Dynamic URL Configuration &bull; Easily change your Render URL</p>
         </div>
     </div>
 
     <script>
+        // API URL management
+        let currentApiUrl = '';
+        const savedUrlsKey = 'savedApiUrls';
+        const currentUrlKey = 'currentApiUrl';
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentUrl();
+            loadSavedUrls();
+            setExampleData();
+        });
+        
+        // Load current URL from localStorage
+        function loadCurrentUrl() {
+            const savedUrl = localStorage.getItem(currentUrlKey);
+            if (savedUrl) {
+                currentApiUrl = savedUrl;
+                document.getElementById('currentApiUrl').textContent = currentApiUrl;
+                document.getElementById('currentEndpoint').textContent = currentApiUrl + '/bfhl';
+            }
+        }
+        
+        // Load saved URLs from localStorage
+        function loadSavedUrls() {
+            const savedUrls = JSON.parse(localStorage.getItem(savedUrlsKey)) || [];
+            const savedUrlsList = document.getElementById('savedUrlsList');
+            
+            savedUrlsList.innerHTML = '';
+            
+            if (savedUrls.length === 0) {
+                savedUrlsList.innerHTML = '<p>No saved URLs yet. Add your Render URL above.</p>';
+                return;
+            }
+            
+            savedUrls.forEach((url, index) => {
+                const urlItem = document.createElement('div');
+                urlItem.className = 'url-item';
+                urlItem.innerHTML = `
+                    <div>${url}</div>
+                    <div class="url-actions">
+                        <button class="url-btn use-btn" onclick="useUrl('${url}')">Use</button>
+                        <button class="url-btn remove-btn" onclick="removeUrl(${index})">Remove</button>
+                    </div>
+                `;
+                savedUrlsList.appendChild(urlItem);
+            });
+        }
+        
+        // Save a new URL
+        function saveUrl() {
+            const urlInput = document.getElementById('apiUrlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            // Add https:// if missing
+            let formattedUrl = url;
+            if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+                formattedUrl = 'https://' + formattedUrl;
+            }
+            
+            // Remove trailing slash
+            formattedUrl = formattedUrl.replace(/\/$/, '');
+            
+            const savedUrls = JSON.parse(localStorage.getItem(savedUrlsKey)) || [];
+            
+            // Avoid duplicates
+            if (!savedUrls.includes(formattedUrl)) {
+                savedUrls.push(formattedUrl);
+                localStorage.setItem(savedUrlsKey, JSON.stringify(savedUrls));
+                loadSavedUrls();
+            }
+            
+            // Set as current URL
+            useUrl(formattedUrl);
+            urlInput.value = '';
+        }
+        
+        // Use a specific URL
+        function useUrl(url) {
+            currentApiUrl = url;
+            localStorage.setItem(currentUrlKey, url);
+            document.getElementById('currentApiUrl').textContent = url;
+            document.getElementById('currentEndpoint').textContent = url + '/bfhl';
+            document.getElementById('apiUrlInput').value = '';
+            
+            // Highlight the selected URL
+            const urlItems = document.querySelectorAll('.url-item');
+            urlItems.forEach(item => {
+                if (item.textContent.includes(url)) {
+                    item.style.backgroundColor = '#e8f4ff';
+                } else {
+                    item.style.backgroundColor = 'white';
+                }
+            });
+        }
+        
+        // Change the current URL
+        function changeUrl() {
+            const newUrl = prompt('Enter new Render URL:', currentApiUrl);
+            if (newUrl !== null) {
+                let formattedUrl = newUrl.trim();
+                
+                // Add https:// if missing
+                if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+                    formattedUrl = 'https://' + formattedUrl;
+                }
+                
+                // Remove trailing slash
+                formattedUrl = formattedUrl.replace(/\/$/, '');
+                
+                useUrl(formattedUrl);
+                
+                // Add to saved URLs if not already there
+                const savedUrls = JSON.parse(localStorage.getItem(savedUrlsKey)) || [];
+                if (!savedUrls.includes(formattedUrl)) {
+                    savedUrls.push(formattedUrl);
+                    localStorage.setItem(savedUrlsKey, JSON.stringify(savedUrls));
+                    loadSavedUrls();
+                }
+            }
+        }
+        
+        // Remove a URL
+        function removeUrl(index) {
+            const savedUrls = JSON.parse(localStorage.getItem(savedUrlsKey)) || [];
+            const removedUrl = savedUrls[index];
+            savedUrls.splice(index, 1);
+            localStorage.setItem(savedUrlsKey, JSON.stringify(savedUrls));
+            
+            // If we removed the current URL, clear it
+            if (removedUrl === currentApiUrl) {
+                currentApiUrl = '';
+                localStorage.removeItem(currentUrlKey);
+                document.getElementById('currentApiUrl').textContent = 'Not set';
+                document.getElementById('currentEndpoint').textContent = '/bfhl';
+            }
+            
+            loadSavedUrls();
+        }
+        
+        // Test the API
         function testAPI() {
+            if (!currentApiUrl) {
+                alert('Please set a Render deployment URL first');
+                return;
+            }
+            
             const arrayInput = document.getElementById('arrayInput').value;
-            const responseDiv = document.getElementById('response');
             const responseContent = document.getElementById('responseContent');
-
-            responseDiv.style.display = 'block';
-            responseDiv.className = 'response';
+            const statusElement = document.getElementById('status');
+            const testBtn = document.getElementById('testBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            
+            // Show loading state
+            testBtn.innerHTML = '<span class="loading"></span> Processing...';
+            testBtn.disabled = true;
+            statusElement.textContent = 'Status: Processing request...';
             responseContent.textContent = 'Loading...';
+            responseContent.className = '';
             
             const dataArray = arrayInput.split(',')
                 .map(item => item.trim())
@@ -107,9 +602,7 @@
                 data: dataArray
             };
             
-            const apiUrl = 'https://fullstack-api-2-gm8t.onrender.com';
-
-            fetch(apiUrl, {
+            fetch(currentApiUrl + '/bfhl', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -117,6 +610,8 @@
                 body: JSON.stringify(payload)
             })
             .then(response => {
+                statusElement.textContent = `Status: ${response.status} ${response.statusText}`;
+                
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
@@ -124,15 +619,46 @@
             })
             .then(data => {
                 responseContent.textContent = JSON.stringify(data, null, 2);
-                responseDiv.className = 'response';
+                responseContent.className = data.is_success ? 'success' : 'error';
+                
+                if (data.is_success) {
+                    // Display the results in the visual containers
+                    document.getElementById('oddNumbers').textContent = data.odd_numbers.join(', ') || 'None';
+                    document.getElementById('evenNumbers').textContent = data.even_numbers.join(', ') || 'None';
+                    document.getElementById('alphabets').textContent = data.alphabets.join(', ') || 'None';
+                    document.getElementById('specialChars').textContent = data.special_characters.join(', ') || 'None';
+                    document.getElementById('sum').textContent = data.sum || '0';
+                    document.getElementById('concatString').textContent = data.concat_string || 'None';
+                    
+                    // Show the result container
+                    resultContainer.style.display = 'block';
+                } else {
+                    resultContainer.style.display = 'none';
+                }
             })
             .catch(error => {
                 responseContent.textContent = `Error: ${error.message}`;
-                responseDiv.className = 'response error';
+                responseContent.className = 'error';
+                resultContainer.style.display = 'none';
+            })
+            .finally(() => {
+                // Reset button state
+                testBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Test API';
+                testBtn.disabled = false;
             });
         }
 
-        document.getElementById('arrayInput').value = 'a, 1, 334, 4, R, $';
+        // Set example data on load
+        function setExampleData() {
+            document.getElementById('arrayInput').value = 'a, 1, 334, 4, R, $';
+        }
+        
+        // Allow pressing Enter to submit
+        document.getElementById('arrayInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testAPI();
+            }
+        });
     </script>
 </body>
 </html>
