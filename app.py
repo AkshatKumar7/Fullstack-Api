@@ -42,17 +42,13 @@ def process_data(data):
                     odd_numbers.append(str(num))
                 numbers_sum += num
         elif is_alphabet(item):
-            # Convert to uppercase as required
             alphabets.append(item.upper())
-            # Collect all characters for concatenation
             alpha_chars.extend(list(item))
         elif is_special_character(item):
             special_characters.append(item)
-    
-    # Create concatenated string in reverse order with alternating caps
+
     concat_string = ""
     if alpha_chars:
-        # Reverse the list of characters
         reversed_chars = list(reversed(alpha_chars))
         for i, char in enumerate(reversed_chars):
             if i % 2 == 0:
@@ -76,8 +72,7 @@ def bfhl():
             return jsonify({
                 "operation_code": 1
             }), 200
-            
-        # Get data from request for POST
+
         request_data = request.get_json()
         
         if not request_data or 'data' not in request_data:
@@ -87,16 +82,14 @@ def bfhl():
             }), 400
         
         data = request_data['data']
-        
-        # Process the data
+
         result = process_data(data)
-        
-        # Prepare response - REPLACE THESE WITH YOUR ACTUAL DETAILS
+
         response = {
             "is_success": True,
-            "user_id": "Akshat_Kumar_030504",  # Replace with your full_name_ddmmyyyy
-            "email": "akshatkumar03052004@gmail.com", # Replace with your email
-            "roll_number": "22BIT0616",     # Replace with your roll number
+            "user_id": "Akshat_Kumar_03052004", 
+            "email": "akshatkumar03052004@gmail.com",
+            "roll_number": "22BIT0616",
             **result
         }
         
@@ -111,7 +104,7 @@ def bfhl():
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({
-        "message": "Welcome to the Full Stack API",  # Fixed the typo
+        "message": "Welcome to the Full Stack API",
         "endpoint": "POST /bfhl"
     }), 200
 
